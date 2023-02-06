@@ -2,3 +2,5 @@ name: TitlePlugin
 version: '${project.version}'
 main: com.yj0524.TitlePlugin
 api-version: 1.19
+commands:
+  titles:
