@@ -56,7 +56,7 @@ public final class TitlePlugin extends JavaPlugin {
                         if (sender instanceof Entity) {
                             targets.add((Entity) sender);
                         } else {
-                            sender.sendMessage("The sender is not an entity.");
+                            sender.sendMessage("The @s selector can only be used by entities, not by the console.");
                             return false;
                         }
                         break;
@@ -78,6 +78,39 @@ public final class TitlePlugin extends JavaPlugin {
                                     .collect(Collectors.toList());
                             if (targets.isEmpty()) {
                                 sender.sendMessage("No entity found with the tag " + tag);
+                                return false;
+                            }
+                        } else if (playerName.startsWith("@p[tag=")) {
+                            String tag = playerName.substring(7, playerName.length() - 1);
+                            targets = Bukkit.getOnlinePlayers().stream()
+                                    .filter(p -> p.getScoreboardTags().contains(tag))
+                                    .collect(Collectors.toList());
+                            if (targets.isEmpty()) {
+                                sender.sendMessage("No player found with the tag " + tag);
+                                return false;
+                            }
+                        } else if (playerName.startsWith("@r[tag=")) {
+                            String tag = playerName.substring(7, playerName.length() - 1);
+                            List<Player> playersWithTag = Bukkit.getOnlinePlayers().stream()
+                                    .filter(p -> p.getScoreboardTags().contains(tag))
+                                    .collect(Collectors.toList());
+                            if (playersWithTag.isEmpty()) {
+                                sender.sendMessage("No player found with the tag " + tag);
+                                return false;
+                            }
+                            targets.add(playersWithTag.get(new Random().nextInt(playersWithTag.size())));
+                        } else if (playerName.startsWith("@s[tag=")) {
+                            if (sender instanceof Entity) {
+                                Entity entity = (Entity) sender;
+                                String tag = playerName.substring(7, playerName.length() - 1);
+                                if (entity.getScoreboardTags().contains(tag)) {
+                                    targets.add(entity);
+                                } else {
+                                    sender.sendMessage("The sender does not have the tag " + tag);
+                                    return false;
+                                }
+                            } else {
+                                sender.sendMessage("The @s selector can only be used by entities, not by the console.");
                                 return false;
                             }
                         } else {
